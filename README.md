@@ -10,7 +10,7 @@ A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it m
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=BvQ571eAOZE">
-    <img src="imgs/github/gus_johnson.jpg" alt="Recording a Spotify Ad - Gus Johnson" style="width:50%;height:50%;">
+    <img src="imgs/github/gus_johnson.jpg" alt="Recording a Spotify Ad - Gus Johnson" width="640" height="360">
   </a>
 </p>
 
