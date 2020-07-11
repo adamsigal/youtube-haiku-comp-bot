@@ -6,7 +6,7 @@
 
 A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **[YouTube channel](https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg)**
 
-## What?
+## YouTube Haiku?
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=BvQ571eAOZE">
