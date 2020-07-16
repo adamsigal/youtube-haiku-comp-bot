@@ -17,30 +17,24 @@ import time
 import random
 
 class Compiler:
-    youtube = build('youtube', 'v3', developerKey='AIzaSyDdkPJNXR6_ZoifmGWGTxknxpOjmOHmxgA')
+    def __init__(youtube, reddit):
+        self.youtube = youtube
+        self.reddit = reddit
 
-    reddit = praw.Reddit(client_id="3ad_76DYm9V_8w",
-                         client_secret="_SfshD61Ht7L31b2y2FPSNkq-DY",
-                         user_agent="my user agent")
-
-    # TODO: handle clipped videos correctly.
-    # urls that start late and end normally end with ?t=85 (where 85 is #seconds)
-    # clipped: https://www.youtube.com/embed/c_jomXhjUjI?start=2&end=32
-
-    # TODO: possible bug if you ask for more videos than there were posted in
-    # given time period; ex. 'top 1000 in pas 24 hrs'.
-
-    # TODO: this function does too much, shoud be split into smaller ones
-    # - get_reddit_submissions()
-    # - get_youtube_vids()
-    # - description_gen()
-    # That way, it will be less tied to other functions, like get_total_duration()
-
-    # period (str): "week", "month", "year", "all time"
-    # time_limit (timedelta): time limit for a given compilation
-    # max_vids (int): max number of vids for a given compilation
-    # min_score (int): min # of upvotes to get into the compilation
+    # Fetches the submissions from reddit
     def get_submission_list(self, period="month", time_limit=datetime.timedelta.max, max_vids=50, min_score=0):
+        """
+        Args:
+            period (str): "week", "month", "year", "all time"
+            time_limit (timedelta): time limit for a given compilation
+            max_vids (int): max number of vids for a given compilation
+            min_score (int): min # of upvotes to get into the compilation
+        Returns:
+            submission_list (praw.models.Submission[]): posts gathered from reddit
+            total_duration (timedelta): sum of videos' lengths
+            description (string[]): list of strings each containing info on posts
+        """
+
         submission_list = []
         ctr = 0
         total_duration = datetime.timedelta(seconds = 0)
