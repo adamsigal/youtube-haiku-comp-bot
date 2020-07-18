@@ -1,5 +1,6 @@
 # By Adam Sigal
 from compiler import Compiler
+import utils
 
 import os
 import praw
@@ -45,14 +46,15 @@ def yt_id_tests():
         ('r5nB9u4jjy4', 'http://www.youtube.com/embed/watch?feature=player_embedded&v=r5nB9u4jjy4'),
         ('t-ZRX8984sc', 'http://www.youtube.com/watch?v=t-ZRX8984sc'),
         ('t-ZRX8984sc', 'http://youtu.be/t-ZRX8984sc'),
+        ('PnMfNyu7UIw', 'https://www.youtube.com/embed/PnMfNyu7UIw?end=32&start=2'),
         (None, 'http://www.stackoverflow.com')
     ]
 
     for (id, url) in test_urls:
         try:
             print("id: " + id)
-            print("get_id: " + get_id(url))
-            if id == get_id(url):
+            print("get_id: " + utils.get_id(url))
+            if id == utils.get_id(url):
                 print("same")
                 #print("IDs are same: " + id + " " + get_id(url))
             else:
@@ -62,3 +64,43 @@ def yt_id_tests():
         except:
             print("An error occured. id: %s, url: %s. \nContinuing..." % (id, url))
             continue
+
+def start_end_test():
+    test_urls = [
+        ((0, None), 'http://youtube.com/watch?v=iwGFalTRHDA'),
+        ((0, None), 'http://www.youtube.com/watch?v=iwGFalTRHDA&feature=related'),
+        ((0, None), 'https://youtube.com/iwGFalTRHDA'),
+        ((0, None), 'http://youtu.be/n17B_uFF4cA'),
+        ((0, None), 'youtube.com/iwGFalTRHDA'),
+        ((0, None), 'youtube.com/n17B_uFF4cA'),
+        ((0, None), 'http://www.youtube.com/embed/watch?feature=player_embedded&v=r5nB9u4jjy4'),
+        ((0, None), 'http://www.youtube.com/watch?v=t-ZRX8984sc'),
+        ((0, None), 'http://youtu.be/t-ZRX8984sc'),
+        ((2, 32), 'https://www.youtube.com/embed/PnMfNyu7UIw?end=32&start=2'),
+        ((3655, None), 'https://www.youtube.com/watch?v=LCTYRqW-ne8&feature=youtu.be&t=1h55s'),
+        ((3600, None), 'https://www.youtube.com/watch?v=LCTYRqW-ne8&feature=youtu.be&t=1h55'),
+        ((3340, None), 'https://youtu.be/LCTYRqW-ne8?t=3340')
+    ]
+    for ((start, end), url) in test_urls:
+        try:
+            # print("start, end: (" + str(start) + ", " + str(end) + ")")
+            # print("url: " + url)
+
+            got_start, got_end = utils.get_start_end(url)
+
+            # print("get_start_end(): (" + str(got_start) + ", " + str(got_end) + ")")
+
+            assert start == got_start
+            assert end == got_end
+        # if start == got_start and end == got_end:
+        #     print("same")
+        #     #print("IDs are same: " + id + " " + get_id(url))
+        # else:
+        #     print("different")
+        #     #print("IDs are different: " + id + " " + get_id(url))
+        # print()
+        except:
+            print("An error occured. start: %s, end: %s, url: %s. \nContinuing..." % (got_start, got_end, url))
+            continue
+
+    print("All timestamp tests passed")
