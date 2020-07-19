@@ -21,6 +21,7 @@ class Compiler:
         self.youtube = youtube
         self.reddit = reddit
 
+
     # Fetches the submissions from reddit
     def get_submission_list(self, period="month", time_limit=datetime.timedelta.max, max_vids=50, min_score=0):
         """
@@ -93,24 +94,6 @@ class Compiler:
         print("total duration: " + str(total_duration))
         return (submission_list, total_duration, description, start_ends)
 
-    # Might be obselete with total_duration included in get_submission_list()
-    def get_total_duration(self, submissions):
-        total_duration = datetime.timedelta(seconds = 0)
-
-        for submission in submissions:
-            vid_id = get_yt_id(submission.url)
-            request = self.youtube.videos().list(
-                part="ContentDetails",
-                id=vid_id
-            )
-            response = request.execute()
-
-            duration_str = response['items'][0]['contentDetails']['duration']
-            duration_timedelta = isodate.parse_duration(duration_str)
-
-            total_duration += duration_timedelta
-
-        return total_duration
 
 
     def shuffle_vids(self, submission_list, description, start_ends):
