@@ -33,6 +33,7 @@ class Compiler:
             submission_list (praw.models.Submission[]): posts gathered from reddit
             total_duration (timedelta): sum of videos' lengths
             description (string[]): list of strings each containing info on posts
+            start_ends ( (int, int)[] ): list of (start, end) tuples
         """
 
         submission_list = []
