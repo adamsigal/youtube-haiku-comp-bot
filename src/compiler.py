@@ -1,5 +1,6 @@
 # By Adam Sigal
 import utils
+import vid_info
 
 import os
 import praw
@@ -17,13 +18,13 @@ import time
 import random
 
 class Compiler:
-    def __init__(youtube, reddit):
+    def __init__(self, youtube, reddit):
         self.youtube = youtube
         self.reddit = reddit
 
 
-    # Fetches the submissions from reddit
-    def get_submission_list(self, period="month", time_limit=datetime.timedelta.max, max_vids=50, min_score=0):
+    # Fetches the submissions from reddit along with their info
+    def fetch_vid_info(self, period="month", time_limit=datetime.timedelta.max, max_vids=50, min_score=0):
         """
         Args:
             period (str): "week", "month", "year", "all time"
@@ -31,20 +32,15 @@ class Compiler:
             max_vids (int): max number of vids for a given compilation
             min_score (int): min # of upvotes to get into the compilation
         Returns:
-            submission_list (praw.models.Submission[]): posts gathered from reddit
+            vid_info (VidInfo[]): each element contains info about video:
+                (submission, title, channel, duration, start, end)
             total_duration (timedelta): sum of videos' lengths
-            description (string[]): list of strings each containing info on posts
-            start_ends ( (int, int)[] ): list of (start, end) tuples
         """
 
-        submission_list = []
+        vid_info = []
         ctr = 0
-        total_duration = datetime.timedelta(seconds = 0)
-        description = []
-        start_ends = []
         for submission in self.reddit.subreddit("youtubehaiku").top(period):
             if (ctr >= max_vids):
-                #print("ctr value: " + str(ctr))
                 break
             try:
                 vid_id = utils.get_yt_id(submission.url)
@@ -60,10 +56,10 @@ class Compiler:
                 assert len(response['items']) != 0
 
                 # parse url to see if it contains start & end information
-                start, end = get_start_end(submission.url)
+                start, end = utils.get_start_end(submission.url)
                 start = int(start)
                 start_td = datetime.timedelta(seconds = start)
-
+                # `end` will either be returned as None or int of seconds
                 if end is not None:
                     end = int(end)
                     duration_timedelta = datetime.timedelta(seconds = end) - start_td
@@ -71,32 +67,45 @@ class Compiler:
                     duration_str = response['items'][0]['contentDetails']['duration']
                     duration_timedelta = isodate.parse_duration(duration_str) - start_td
 
-
+                # if we reach a max duration or min score, we end the for loop
                 if (total_duration+duration_timedelta > time_limit) or (submission.score < min_score):
                     break
 
                 title = response['items'][0]['snippet']['title']
                 channel = response['items'][0]['snippet']['channelTitle']
-                # TODO: will total_duration appear as a clickable timestamp in the yt description?
-                description.append(str(total_duration) + ' "' + title + '" - ' + channel + "\n" + submission.url)
 
-                submission_list.append(submission)
+                vid_info.append( VidInfo(submission, title, channel, duration_timedelta, start, end) )
                 total_duration += duration_timedelta
                 ctr += 1
-                start_ends.append( (start, end) )
-
 
             except Exception as e:
                 print("Error with post: ", e)
                 print("Post title: '%s'. \nPost url: %s\nContinuing..." % (submission.title, submission.url))
 
-        print("length of list: " + str(len(submission_list)))
-        print("total duration: " + str(total_duration))
-        return (submission_list, total_duration, description, start_ends)
+                # TODO: remove
+                break
+
+        return (vid_info, total_duration)
 
 
+    def gen_description(self, vid_info):
+        """
+        Args:
+            vid_info (VidInfo[]): info from videos to be included in compilation
+        Returns:
+            description (string[]): list where each element contains string
+                corresponding to the description of a single video
+        """
+        description = []
+        total_duration = datetime.timedelta(seconds = 0)
+        for i in range(vid_info):
+            description.append(str(total_duration) + ' "' + vid_info[i].title + '" - ' + vid_info[i].channel + "\n" + vid_info[i].submission.url)
+            total_duration += vid_info[i].duration
 
-    def shuffle_vids(self, submission_list, description, start_ends):
+        return description
+
+    # TODO: this function is now obsolete
+    def shuffle_vids(self, vid_info):
         # zip together these 2 lists so that their elements can be shuffled in the same order
         zip_subs_desc = list(zip(submission_list, description, start_ends))
         # randomize order so that the worst ones aren't last
@@ -106,35 +115,33 @@ class Compiler:
         return zip(*zip_subs_desc)
 
 
-    # TODO: for highest quality (1080p and above) you need to merge
-    # separate audio and video streams
-    # https://python-pytube.readthedocs.io/en/latest/user/quickstart.html
-    def download_vids(self, submissions, delete_past_vids=True):
+
+    def download_vids(self, vid_info, delete_past_vids=True):
         if delete_past_vids:
             os.system("rm ../vids/*.mp4")
 
         # for having consistent naming of downloaded video files
-        l = len(submissions)
+        l = len(vid_info)
         decimal_places = math.ceil(math.log10(l))
         format_string = "{:0" + str(decimal_places) + "d}"
-                    # TODO: remove 10, i'm just using it to skip to where prob is
-        for i in range(len(submissions)):
+
+        for i in range(l):
     #         try:
             #pre_prefix = "Downloading: " + submissions[i].title + "\n"
 
             utils.printProgressBar(i+1, l, prefix = 'Downloading videos:', suffix = 'Complete', length = 50)
-            # TODO: remove, this is for testing
 
-            vid = YouTube(submissions[i].url)
+            vid = YouTube(vid_info[i].submission.url)
             streams = vid.streams.filter(progressive=True)
 
-            vid_name = format_string.format(i+1) + "-" + submissions[i].title.replace(" ", "_")
+            vid_name = format_string.format(i+1) + "-" + vid_info[i].submission.title.replace(" ", "_")
     #         print(vid_name)
     #         continue
             streams.get_highest_resolution().download('../vids', vid_name)
                 #vid_paths.append("./vids/" + vid_name + ".mp4")
     #         except:
     #             print("Error with post: '%s'. \nurl: %s\nContinuing..." % (submissions[i].title, submissions[i].url))
+
 
     # Generates name of the compilation based on date and number of videos
     def comp_name_gen(self, period, num_vids):

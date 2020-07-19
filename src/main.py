@@ -16,18 +16,19 @@ def parse():
 def main():
     compiler = Compiler(private.get_yt(), private.get_reddit())
     period = "week"
-    max_vids = 20
+    max_vids = 5
 
 
-    submission_list, total_duration, description, start_ends = compiler.get_submission_list(period=period, max_vids=max_vids)
-    #print("Top 20 duration: " + str(total_duration))
-    comp_name = compiler.comp_name_gen(period, max_vids)
+    vid_info, total_duration = compiler.fetch_vid_info(period=period, max_vids=max_vids)
 
-    submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
-    compiler.write_description(comp_name, description)
-    compiler.download_vids(submission_list)
 
-    compiler.create_compilation(comp_name, start_ends)
+    # comp_name = compiler.comp_name_gen(period, max_vids)
+    #
+    # #submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
+    # compiler.write_description(comp_name, description)
+    # compiler.download_vids(submission_list)
+    #
+    # compiler.create_compilation(comp_name, start_ends)
 
 if __name__ == "__main__":
     main()
