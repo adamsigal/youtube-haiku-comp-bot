@@ -39,6 +39,7 @@ class Compiler:
         ctr = 0
         total_duration = datetime.timedelta(seconds = 0)
         description = []
+        start_ends = []
         for submission in self.reddit.subreddit("youtubehaiku").top(period):
             if (ctr >= max_vids):
                 #print("ctr value: " + str(ctr))
@@ -56,8 +57,17 @@ class Compiler:
                 # if 'items' is empty, no vid data was retrievable => don't want in list
                 assert len(response['items']) != 0
 
-                duration_str = response['items'][0]['contentDetails']['duration']
-                duration_timedelta = isodate.parse_duration(duration_str)
+                # parse url to see if it contains start & end information
+                start, end = get_start_end(submission.url)
+                start = int(start)
+                start_td = datetime.timedelta(seconds = start)
+
+                if end is not None:
+                    end = int(end)
+                    duration_timedelta = datetime.timedelta(seconds = end) - start_td
+                else:
+                    duration_str = response['items'][0]['contentDetails']['duration']
+                    duration_timedelta = isodate.parse_duration(duration_str) - start_td
 
 
                 if (total_duration+duration_timedelta > time_limit) or (submission.score < min_score):
@@ -71,6 +81,7 @@ class Compiler:
                 submission_list.append(submission)
                 total_duration += duration_timedelta
                 ctr += 1
+                start_ends.append( (start, end) )
 
 
             except Exception as e:
@@ -79,7 +90,7 @@ class Compiler:
 
         print("length of list: " + str(len(submission_list)))
         print("total duration: " + str(total_duration))
-        return (submission_list, total_duration, description)
+        return (submission_list, total_duration, description, start_ends)
 
     # Might be obselete with total_duration included in get_submission_list()
     def get_total_duration(self, submissions):
@@ -101,13 +112,13 @@ class Compiler:
         return total_duration
 
 
-    def shuffle_desc_and_vids(self, submission_list, description):
+    def shuffle_vids(self, submission_list, description, start_ends):
         # zip together these 2 lists so that their elements can be shuffled in the same order
-        zip_subs_desc = list(zip(submission_list, description))
+        zip_subs_desc = list(zip(submission_list, description, start_ends))
         # randomize order so that the worst ones aren't last
         random.shuffle(zip_subs_desc)
 
-        # unzip to (submission_list, description)
+        # unzip to (submission_list, description, start_ends)
         return zip(*zip_subs_desc)
 
 
@@ -163,16 +174,22 @@ class Compiler:
 
 
 
-    # TODO: add subclip functionality
+    # TODO: make sure that subclips are working correctly
     # https://zulko.github.io/moviepy/getting_started/quick_presentation.html
-    def create_compilation(self, comp_name):
+    def create_compilation(self, comp_name, start_ends):
         #os.system("rm final/*")
 
         videoclips = []
         d = "../vids"
         for path in sorted(os.listdir(d)):
             full_path = os.path.join(d, path)
+            # from filename, extract index: "05-[haiku].mp4" -> 4
+            vid_index = int(re.findall(r'\d+', t)[0]) - 1
+            start, end = start_ends[vid_index]
+
             vid = VideoFileClip(full_path).fx(afx.audio_normalize)
+            # TODO: check that it's fine if end=None
+            vid = vid.subclip(start, end)
             # so that all clips will fit nicely on a 720p canvas:
             vid = vid.resize(height=720)
             # place on background of 720p resolution.

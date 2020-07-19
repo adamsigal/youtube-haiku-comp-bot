@@ -14,6 +14,13 @@ def get_yt_id(url):
         return pth[-1]
 
 def get_start_end(url):
+    """
+    Args:
+        url (str): YouTube url
+    Returns:
+        start (int): start time in seconds
+        end (int): end time in seconds (None if not specified)
+    """
     #url = "https://www.youtube.com/embed/c_jomXhjUjI?t=1h3m40s"
     if "end=" in url:
         # 'end=' followed by # of seconds
