@@ -11,7 +11,7 @@
   </a>
 </p>
 
-A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **<a href="https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg" target="_blank" > <!--- /_ ---> YouTube channel </a>**
+A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **<a href="https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg" target="_blank" > YouTube channel </a>**  <!--- /_ --->
 
 ## YouTube Haiku?
 
@@ -21,7 +21,7 @@ A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it m
   </a>
 </p>
 
-YouTube Haiku is a <a href="https://www.reddit.com/r/youtubehaiku/" target="_blank" > <!--- /_ ---> subreddit </a> dedicated to the finest of bite-sized comedy videos. In the essence of the *Vine compilations* of my youth, this program amalgamates the best videos of a given time period and uploads them in an easy-to-consume format.
+YouTube Haiku is a <a href="https://www.reddit.com/r/youtubehaiku/" target="_blank" > subreddit </a> <!--- /_ --->  dedicated to the finest of bite-sized comedy videos. In the essence of the *Vine compilations* of my youth, this program amalgamates the best videos of a given time period and uploads them in an easy-to-consume format.
 
 ## Usage
 | Option                | Type     | Description                                      |
