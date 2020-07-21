@@ -26,9 +26,9 @@ YouTube Haiku is a [subreddit](https://www.reddit.com/r/youtubehaiku/) dedicated
 ## Usage
 | Option                | Type     | Description                                      |
 |-----------------------|----------|--------------------------------------------------|
-| -p , --period         | string   | Options: 'week', 'month', 'year', 'all time'. Default value: "week" |
-| -mv , --max-vids      | int      | Max number of vids for a given compilation. Default value: 5|
-| -ms , --min-score     | int      | Min number of upvotes to get into the compilation. Default value: 0|
+| -p , --period         | string   | Options: 'week', 'month', 'year', 'all time'. Default value: "week". |
+| -mv , --max-vids      | int      | Max number of vids for a given compilation. Default value: 5.|
+| -ms , --min-score     | int      | Min number of upvotes to get into the compilation. Default value: 0.|
 | -nd, --no-download    | N/A      | Indicates to not download videos locally. Takes no argument.   |
 | -tl , --time-limit    | int      | Max duration of compilation in minutes. No limit by default.|
 
