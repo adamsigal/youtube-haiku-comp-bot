@@ -1,17 +1,17 @@
 # YouTube Haiku Compilation Bot
 
 <p align="center">
-  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
+  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1" target="_blank" >  <!--- /_  (atom coloring probs)--->
     <img src="imgs/yt-haiku.png">
   </a>
 </p>
 <p align="left">
-  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
+  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1" target="_blank" > <!--- /_ (atom coloring probs) --->
     <img src="imgs/github/subscribe.jpg", width="20%" height="30%">
   </a>
 </p>
 
-A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **[YouTube channel](https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg)**
+A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **<a href="https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg" target="_blank" > <!--- /_ ---> YouTube channel </a>**
 
 ## YouTube Haiku?
 
@@ -21,7 +21,7 @@ A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it m
   </a>
 </p>
 
-YouTube Haiku is a [subreddit](https://www.reddit.com/r/youtubehaiku/) dedicated to the finest of bite-sized comedy videos. In the essence of the *Vine compilations* of my youth, this program amalgamates the best videos of a given time period and uploads them in an easy-to-consume format.
+YouTube Haiku is a <a href="https://www.reddit.com/r/youtubehaiku/" target="_blank" > <!--- /_ ---> subreddit </a> dedicated to the finest of bite-sized comedy videos. In the essence of the *Vine compilations* of my youth, this program amalgamates the best videos of a given time period and uploads them in an easy-to-consume format.
 
 ## Usage
 | Option                | Type     | Description                                      |
