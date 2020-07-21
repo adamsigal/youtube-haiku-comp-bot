@@ -37,5 +37,5 @@ YouTube Haiku is a [subreddit](https://www.reddit.com/r/youtubehaiku/) dedicated
 ex. Create compilation of consisting of the top 6 posts of all time, with a time limit of 7 minutes, and a minimum score of 1000 upvotes.
 
 ```bash
-> python src/main.py -nd -p "all time" -mv 6 -tl 7 -ms 1000
+python src/main.py -nd -p "all time" -mv 6 -tl 7 -ms 1000
 ```
