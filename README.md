@@ -1,12 +1,12 @@
 # YouTube Haiku Compilation Bot
 
 <p align="center">
-  <a href="http://www.youtube.com/user/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
+  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
     <img src="imgs/yt-haiku.png">
   </a>
 </p>
 <p align="left">
-  <a href="http://www.youtube.com/user/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
+  <a href="http://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg?sub_confirmation=1">
     <img src="imgs/github/subscribe.jpg", width="20%" height="30%">
   </a>
 </p>
