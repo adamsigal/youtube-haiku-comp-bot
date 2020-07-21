@@ -37,7 +37,7 @@ def main(period, time_limit, max_vids, min_score, no_download):
     # for debugging
     fetch = True
     write = True
-    pkl_path = MAIN_DIR + '/tmp/vid_info.pkl'
+    pkl_path = MAIN_DIR + '/src/vid_info.pkl'
 
     # vid info will either be fetched or read from file
     if fetch:
