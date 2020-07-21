@@ -31,3 +31,9 @@ YouTube Haiku is a [subreddit](https://www.reddit.com/r/youtubehaiku/) dedicated
 | -ms , --min-score     | int      | Min number of upvotes to get into the compilation. Default value: 0|
 | -nd, --no-download    | N/A      | Indicates to not download videos locally. Takes no argument.   |
 | -tl , --time-limit    | int      | Max duration of compilation in minutes. No limit by default.|
+
+ex. Create compilation of consisting of the top 6 posts of all time, with a time limit of 7 minutes, and a minimum score of 1000 upvotes.
+
+```bash
+> python src/main.py -nd -p "all time" -mv 6 -tl 7 -ms 1000
+```
