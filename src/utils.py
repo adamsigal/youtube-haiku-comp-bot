@@ -1,5 +1,6 @@
 import re
 from urllib.parse import urlparse, parse_qs
+import pickle
 
 
 # shouts to Willem Van Onsem:
@@ -85,3 +86,17 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total:
         print()
+
+# write vid info to file; used to reduce api query usage
+def write_vid_info(path, vid_info, total_duration):
+    with open(path, 'wb') as f:
+        pickle.dump((vid_info, total_duration), f, pickle.HIGHEST_PROTOCOL)
+
+# read vid info from file; used to reduce api query usage
+def read_vid_info(path):
+    try:
+        with open(path, 'rb') as f:
+            vid_info, total_duration = pickle.load(f)
+            return vid_info, total_duration
+    except Exception as e:
+        print("Error retrieving vid info: ", e)

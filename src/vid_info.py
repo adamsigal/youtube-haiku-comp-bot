@@ -29,4 +29,5 @@ class VidInfo:
             print("end: " + str(self.end))
         else:
             print("end: " + str(self.end) + "s")
-        #print("submission: " + self.submission + "\n")
+        #print("submission: " + self.submission)
+        print()

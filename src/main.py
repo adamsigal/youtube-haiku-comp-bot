@@ -1,35 +1,47 @@
 from compiler import Compiler
+import utils
+
 import tests
 import argparse
 import sys
 import os
+import datetime
 
-# access private directory
+# access priv_utils directory
 MAIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, MAIN_DIR + "/private")
 import priv_utils
 
-def parse():
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("--period", "-p", help="options: 'week', 'month', 'year', 'all time'", default="week")
-    parser.add_argument("--max_vids", "-v", help="max number of vids for a given compilation", type=int, default=5)
-    parser.add_argument("--min_score", "-s", help="min number of upvotes to get into the compilation", type=int, default=None)
-    # TODO: add later
-    # parser.add_argument("--time_limit", "-tl", help="time limit for a given compilation")
-
-    args = parser.parse_args()
-
-def main():
-    compiler = Compiler(private.get_yt(), private.get_reddit())
-    period = "week"
-    max_vids = 5
 
 
-    vid_info, total_duration = compiler.fetch_vid_info(period=period, max_vids=max_vids)
-    print("total duration: " + str(total_duration) + "\n")
-    for i in range(len(vid_info)):
-        vid_info[i].print_info()
+def main(period, time_limit, max_vids, min_score, no_download):
+    compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit())
 
+    # for debugging
+    fetch = True
+    write = True
+    pkl_path = MAIN_DIR + '/tmp/vid_info.pkl'
+
+    # vid info will either be fetched or read from file
+    if fetch:
+        print("fetching") # TODO: remove
+        vid_info, total_duration = compiler.fetch_vid_info(period=period, time_limit=time_limit, max_vids=max_vids, min_score=min_score)
+
+        # only write if new values have been fetched
+        if write:
+            print("writing") # TODO: remove
+            utils.write_vid_info(pkl_path, vid_info, total_duration)
+    else:
+        print("reading") # TODO: remove
+        vid_info, total_duration = utils.read_vid_info(pkl_path)
+
+
+
+
+    # print("total duration: " + str(total_duration) + "\n")
+    # for i in range(len(vid_info)):
+    #     vid_info[i].print_info()
+    #
     # comp_name = compiler.comp_name_gen(period, max_vids)
     #
     # #submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
@@ -39,4 +51,61 @@ def main():
     # compiler.create_compilation(comp_name, start_ends)
 
 if __name__ == "__main__":
-    main()
+    # These variables are instanciated to make it easier to see default vals
+    default_period = "week"
+    default_max_vids = 5 #TODO: make positional
+    default_min_score = 0
+    default_no_download = False # by default we download the videos
+    default_time_limit = datetime.timedelta.max
+
+    parser = argparse.ArgumentParser(prog='YouTube Haiku Compilation Bot')
+    parser.add_argument("-p", "--period",       help="options: 'week', 'month', 'year', 'all time'",
+                            default=default_period,      metavar='')
+
+    parser.add_argument("-mv", "--max-vids",    help="max number of vids for a given compilation",
+                            default=default_max_vids,    metavar='', type=int)
+
+    parser.add_argument("-ms", "--min-score",   help="min number of upvotes to get into the compilation",
+                            default=default_min_score,   metavar='', type=int)
+
+    parser.add_argument("-nd", "--no-download", help="indicates to not download videos locally",
+                            default=default_no_download, action="store_true")
+
+    parser.add_argument("-tl", "--time-limit",  help="max duration of compilation in minutes",
+                            default=None,                metavar='', type=int)
+    # TODO: add later
+    # parser.add_argument("--time_limit", "-tl", help="time limit for a given compilation")
+
+    args = parser.parse_args()
+    assert args.period in ('week', 'month', 'year', 'all time')
+    assert (args.max_vids >= 0) and (args.min_score >= 0)
+
+    # time limit must be converted to timedelta
+    if args.time_limit:
+        time_limit = datetime.timedelta(minutes = args.time_limit)
+    else:
+        time_limit = default_time_limit
+
+    # make sure the command is what they actually intended
+    doublecheck = "'Top " + str(args.max_vids) + " of the " + args.period
+    if args.no_download:
+        doublecheck = doublecheck + ", no download"
+    if args.time_limit:
+        doublecheck = doublecheck + ", time limit: " + str(args.time_limit) + " mins"
+    if args.min_score:
+        doublecheck = doublecheck + ", minimum score: " + str(args.min_score)
+    doublecheck = doublecheck + "'"
+
+    print(doublecheck)
+
+    while True:
+        choice = input("Is this command correct? [Y/n] ").lower()
+        if choice in ('y', 'yes'):
+            break
+        elif choice in ('n', 'no'):
+            print("Try again, use '--help' if needed.")
+            exit(0)
+        else:
+            sys.stdout.write("Please respond with 'y' or 'n' (or 'yes' or 'no').\n")
+
+    main(args.period, time_limit, args.max_vids, args.min_score, args.no_download)

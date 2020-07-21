@@ -81,8 +81,10 @@ class Compiler:
 
             except Exception as e:
                 print("Error with post: ", e)
-                print("Post title: '%s'. \nPost url: %s\nContinuing..." % (submission.title, submission.url))
-
+                print("Post title: '%s'. \nPost url: %s" % (submission.title, submission.url))
+                if "quota" in str(e):
+                    exit(0)
+                print("Continuing...")
 
         return (vid_info, total_duration)
 
