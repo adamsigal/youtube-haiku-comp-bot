@@ -10,6 +10,7 @@
     <img src="imgs/github/subscribe.jpg", width="20%" height="30%">
   </a>
 </p>
+
 A ~~bot~~ script that creates YouTube Haiku compilations. (Planning to make it more of a *bot* in the future, for now the script is run myself). Compilations will be posted regularly to the **[YouTube channel](https://www.youtube.com/channel/UC4bbRJvsJ5ruK2znzjOOZCg)**
 
 ## YouTube Haiku?
