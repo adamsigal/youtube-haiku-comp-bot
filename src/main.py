@@ -1,7 +1,13 @@
 from compiler import Compiler
 import tests
-import private
 import argparse
+import sys
+import os
+
+# access private directory
+MAIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, MAIN_DIR + "/private")
+import priv_utils
 
 def parse():
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -20,7 +26,9 @@ def main():
 
 
     vid_info, total_duration = compiler.fetch_vid_info(period=period, max_vids=max_vids)
-
+    print("total duration: " + str(total_duration) + "\n")
+    for i in range(len(vid_info)):
+        vid_info[i].print_info()
 
     # comp_name = compiler.comp_name_gen(period, max_vids)
     #

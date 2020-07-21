@@ -1,6 +1,6 @@
 # By Adam Sigal
 import utils
-import vid_info
+from vid_info import VidInfo
 
 import os
 import praw
@@ -38,6 +38,7 @@ class Compiler:
         """
 
         vid_info = []
+        total_duration = datetime.timedelta(seconds = 0)
         ctr = 0
         for submission in self.reddit.subreddit("youtubehaiku").top(period):
             if (ctr >= max_vids):
@@ -82,8 +83,6 @@ class Compiler:
                 print("Error with post: ", e)
                 print("Post title: '%s'. \nPost url: %s\nContinuing..." % (submission.title, submission.url))
 
-                # TODO: remove
-                break
 
         return (vid_info, total_duration)
 
