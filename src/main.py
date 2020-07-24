@@ -35,7 +35,7 @@ def main(period, time_limit, max_vids, min_score, no_download):
     compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit())
 
     # for debugging
-    fetch = True
+    fetch = False
     write = True
     pkl_path = MAIN_DIR + '/src/vid_info.pkl'
 
@@ -59,13 +59,13 @@ def main(period, time_limit, max_vids, min_score, no_download):
     # for i in range(len(vid_info)):
     #     vid_info[i].print_info()
     #
-    # comp_name = compiler.comp_name_gen(period, max_vids)
-    #
-    # #submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
-    # compiler.write_description(comp_name, description)
-    # compiler.download_vids(submission_list)
-    #
-    # compiler.create_compilation(comp_name, start_ends)
+    comp_name = compiler.comp_name_gen(period, max_vids)
+
+    #submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
+    compiler.write_description(comp_name, description)
+    compiler.download_vids(submission_list)
+    
+    compiler.create_compilation(comp_name, start_ends)
 
 if __name__ == "__main__":
     # These variables are instanciated to make it easier to see default vals

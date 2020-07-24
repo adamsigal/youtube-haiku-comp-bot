@@ -121,17 +121,6 @@ class Compiler:
 
         return description
 
-    # TODO: this function is now obsolete
-    def shuffle_vids(self, vid_info):
-        # zip together these 2 lists so that their elements can be shuffled in the same order
-        zip_subs_desc = list(zip(submission_list, description, start_ends))
-        # randomize order so that the worst ones aren't last
-        random.shuffle(zip_subs_desc)
-
-        # unzip to (submission_list, description, start_ends)
-        return zip(*zip_subs_desc)
-
-
 
     def download_vids(self, vid_info, delete_past_vids=True):
         if delete_past_vids:
