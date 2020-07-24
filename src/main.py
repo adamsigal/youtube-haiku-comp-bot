@@ -36,6 +36,10 @@ random.seed(1337)
 def main(period, time_limit, max_vids, min_score, no_download):
     compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit(), MAIN_DIR)
 
+    tests.download_test(MAIN_DIR, "are_ya_winnin_son", "https://www.youtube.com/watch?v=xCLTw1L-H5g&feature=emb_title")
+    return
+
+
     # for debugging
     fetch = False
     write = True
@@ -94,8 +98,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-tl", "--time-limit",  help="max duration of compilation in minutes",
                             default=None,                metavar='', type=int)
-    # TODO: add later
-    # parser.add_argument("--time_limit", "-tl", help="time limit for a given compilation")
+
+    parser.add_argument("-y", "--yes",  help="assume 'yes' to all prompts",
+                            default=False,               action="store_true")
 
     args = parser.parse_args()
     assert args.period in ('week', 'month', 'year', 'all time')
@@ -120,6 +125,10 @@ if __name__ == "__main__":
     print(doublecheck)
 
     while True:
+        if args.yes:
+            print("Is this command correct? [Y/n] y")
+            break
+
         choice = input("Is this command correct? [Y/n] ").lower()
         if choice in ('y', 'yes'):
             break

@@ -17,6 +17,7 @@
 
 from compiler import Compiler
 import utils
+from vid_info import VidInfo
 
 import os
 import praw
@@ -36,7 +37,7 @@ import random
 def yt_request_test(compiler):
     request = compiler.youtube.videos().list(
     part="snippet,contentDetails",
-    id="Ks-_Mh1QhMc"
+    id="xCLTw1L-H5g"
     )
     response = request.execute()
     print(response['items'][0]['snippet']['channelTitle'])
@@ -44,6 +45,10 @@ def yt_request_test(compiler):
     duration_str = response['items'][0]['contentDetails']['duration']
     duration_timedelta = isodate.parse_duration(duration_str)
 
+def download_test(main_dir, title, url):
+    vid = YouTube(url)
+    streams = vid.streams.filter(progressive=True)
+    streams.get_highest_resolution().download(main_dir + '/tmp', title)
 
 def get_submission_list_test(compiler, period="week", max_vids=5):
     submission_list, total_duration, description = compiler.get_submission_list(period=period, max_vids=max_vids)
