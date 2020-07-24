@@ -28,7 +28,7 @@ class VidInfo:
         	channel:    (string),
         	duration:   (datetime.timedelta),
         	start:      (int) (seconds),
-        	end:        (int) (seconds)
+        	end:        (int) (seconds; None if end == end of video)
         """
         self.submission = submission
         self.title = title
@@ -46,5 +46,6 @@ class VidInfo:
             print("end: " + str(self.end))
         else:
             print("end: " + str(self.end) + "s")
+        print("url: " + self.submission.url)
         #print("submission: " + self.submission)
         print()

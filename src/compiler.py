@@ -31,12 +31,12 @@ from moviepy.editor import *
 from moviepy.video.tools.segmenting import findObjects
 import pygame
 import time
-import random
 
 class Compiler:
-    def __init__(self, youtube, reddit):
+    def __init__(self, youtube, reddit, main_dir):
         self.youtube = youtube
         self.reddit = reddit
+        self.main_dir = main_dir
 
 
     # Fetches the submissions from reddit along with their info
@@ -104,7 +104,7 @@ class Compiler:
 
         return (vid_info, total_duration)
 
-
+    # generates a list contaning descriptions of each video
     def gen_description(self, vid_info):
         """
         Args:
@@ -115,16 +115,42 @@ class Compiler:
         """
         description = []
         total_duration = datetime.timedelta(seconds = 0)
-        for i in range(vid_info):
+        for i in range(len(vid_info)):
             description.append(str(total_duration) + ' "' + vid_info[i].title + '" - ' + vid_info[i].channel + "\n" + vid_info[i].submission.url)
             total_duration += vid_info[i].duration
 
         return description
 
+    # writes description to file
+    def write_description(self, comp_name, description):
+        """
+        Args:
+            comp_name (string): name of the compilation
+            description (string[]): list of individual video descriptions
+        """
+        str_description = "\n\n".join(description)
+
+        # hashtags from video titles get automatically added to the
+        # compilation's hastags, so I just remove them
+        str_description = str_description.replace('#', ' ')
+
+        f = open(self.main_dir + "/final/" + comp_name + "_description" , "w")
+        f.write(str_description)
+        f.close()
+        print("Description written to file: " + self.main_dir + "/final/" + comp_name + "_description")
+
+
+    # Generates name of the compilation based on date and number of videos
+    def comp_name_gen(self, period, num_vids):
+        if period in ('day', 'week', 'month', 'year'):
+            return str(datetime.datetime.date(datetime.datetime.now())) + "_top_" + str(num_vids) + "_of_" + period
+        else:
+            raise Exception("invalid period argument, must be one of: 'day', 'week', 'month', 'year'")
+
 
     def download_vids(self, vid_info, delete_past_vids=True):
         if delete_past_vids:
-            os.system("rm ../vids/*.mp4")
+            os.system("rm " + self.main_dir + "/vids/*.mp4")
 
         # for having consistent naming of downloaded video files
         l = len(vid_info)
@@ -143,46 +169,26 @@ class Compiler:
             vid_name = format_string.format(i+1) + "-" + vid_info[i].submission.title.replace(" ", "_")
     #         print(vid_name)
     #         continue
-            streams.get_highest_resolution().download('../vids', vid_name)
+            streams.get_highest_resolution().download(self.main_dir + '/vids', vid_name)
                 #vid_paths.append("./vids/" + vid_name + ".mp4")
     #         except:
     #             print("Error with post: '%s'. \nurl: %s\nContinuing..." % (submissions[i].title, submissions[i].url))
 
 
-    # Generates name of the compilation based on date and number of videos
-    def comp_name_gen(self, period, num_vids):
-        if period in ('day', 'week', 'month', 'year'):
-            return str(datetime.datetime.date(datetime.datetime.now())) + "_top_" + str(num_vids) + "_of_" + period
-        else:
-            raise Exception("invalid period argument, must be one of: 'day', 'week', 'month', 'year'")
-
-    # Description still expected in list form
-    def write_description(self, comp_name, description):
-        str_description = "\n\n".join(description)
-
-        # hashtags from video titles will automatically be added to the
-        # compilation's hastags, so I just remove them
-        str_description = str_description.replace('#', '')
-
-        f = open("../final/" + comp_name + "_description" , "w")
-        f.write(str_description)
-        f.close()
-        print("Description written to file: " + "../final/" + comp_name + "_description")
-
-
 
     # TODO: make sure that subclips are working correctly
-    # https://zulko.github.io/moviepy/getting_started/quick_presentation.html
-    def create_compilation(self, comp_name, start_ends):
+    def create_compilation(self, comp_name, vid_info):
         #os.system("rm final/*")
-
         videoclips = []
-        d = "../vids"
+        d = self.main_dir + "/vids"
         for path in sorted(os.listdir(d)):
+            print("processing " + path)
             full_path = os.path.join(d, path)
+
             # from filename, extract index: "05-[haiku].mp4" -> 4
-            vid_index = int(re.findall(r'\d+', t)[0]) - 1
-            start, end = start_ends[vid_index]
+            vid_index = int(re.findall(r'\d+', path)[0]) - 1
+
+            start, end = vid_info[vid_index].start, vid_info[vid_index].end
 
             vid = VideoFileClip(full_path).fx(afx.audio_normalize)
             # TODO: check that it's fine if end=None
@@ -215,13 +221,12 @@ class Compiler:
 
         # close pygame window -- it was opened at `composed_clip.show()` just above
         pygame.quit()
+        print("made it to pygame quit")
         #print(videoclips)
-        # TODO: shuffle this earlier so that i can make the description correspond
 
-        #return # TODO: remove
         compilation = concatenate_videoclips(videoclips, method="compose")
         # normalize audio
         ##compilation = compilation.fx(afx.audio_normalize)
 
-        # TODO: give good name
-        compilation.write_videofile("../final/" + comp_name + ".mp4")
+        print("writing compilation...")
+        compilation.write_videofile(self.main_dir + "/final/" + comp_name + ".mp4")

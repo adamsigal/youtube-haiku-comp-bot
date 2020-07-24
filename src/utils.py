@@ -105,15 +105,14 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 # write vid info to file; used to reduce api query usage
-def write_vid_info(path, vid_info, total_duration):
+def write_pkl(path, data):
     with open(path, 'wb') as f:
-        pickle.dump((vid_info, total_duration), f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 # read vid info from file; used to reduce api query usage
-def read_vid_info(path):
+def read_pkl(path):
     try:
         with open(path, 'rb') as f:
-            vid_info, total_duration = pickle.load(f)
-            return vid_info, total_duration
+            return pickle.load(f)
     except Exception as e:
         print("Error retrieving vid info: ", e)

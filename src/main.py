@@ -23,21 +23,24 @@ import argparse
 import sys
 import os
 import datetime
+import random
 
 # access priv_utils directory
 MAIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, MAIN_DIR + "/private")
 import priv_utils
 
+random.seed(1337)
 
 
 def main(period, time_limit, max_vids, min_score, no_download):
-    compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit())
+    compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit(), MAIN_DIR)
 
     # for debugging
     fetch = False
     write = True
-    pkl_path = MAIN_DIR + '/src/vid_info.pkl'
+    vid_pkl_path = MAIN_DIR + '/src/vid_info.pkl'
+
 
     # vid info will either be fetched or read from file
     if fetch:
@@ -47,25 +50,26 @@ def main(period, time_limit, max_vids, min_score, no_download):
         # only write if new values have been fetched
         if write:
             print("writing") # TODO: remove
-            utils.write_vid_info(pkl_path, vid_info, total_duration)
+            utils.write_pkl(vid_pkl_path, (vid_info, total_duration))
     else:
         print("reading") # TODO: remove
-        vid_info, total_duration = utils.read_vid_info(pkl_path)
+        #vid_info, total_duration = utils.read_vid_info(vid_pkl_path)
+        vid_info, total_duration = utils.read_pkl(vid_pkl_path)
 
 
+    print("total duration: " + str(total_duration) + "\n")
+    for i in range(len(vid_info)):
+        vid_info[i].print_info()
 
-
-    # print("total duration: " + str(total_duration) + "\n")
-    # for i in range(len(vid_info)):
-    #     vid_info[i].print_info()
-    #
     comp_name = compiler.comp_name_gen(period, max_vids)
 
-    #submission_list, description, start_ends = compiler.shuffle_vids(submission_list, description, start_ends)
+    # shuffle vid order so that worst vids aren't always last
+    random.shuffle(vid_info)
+    description = compiler.gen_description(vid_info)
     compiler.write_description(comp_name, description)
-    compiler.download_vids(submission_list)
-    
-    compiler.create_compilation(comp_name, start_ends)
+    compiler.download_vids(vid_info)
+
+    compiler.create_compilation(comp_name, vid_info)
 
 if __name__ == "__main__":
     # These variables are instanciated to make it easier to see default vals
