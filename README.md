@@ -31,6 +31,7 @@ YouTube Haiku is a [subreddit](https://www.reddit.com/r/youtubehaiku/) dedicated
 | -ms , --min-score     | int      | Min number of upvotes to get into the compilation. Default value: 0.|
 | -nd, --no-download    | N/A      | Indicates to not download videos locally. Takes no argument.   |
 | -tl , --time-limit    | int      | Max duration of compilation in minutes. No limit by default.|
+| -y, --yes             | N/A      | Indicates an assumed "yes" response to all command line prompts  |
 
 <br/>
 
