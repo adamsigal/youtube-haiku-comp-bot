@@ -149,6 +149,8 @@ class Compiler:
 
 
     def download_vids(self, vid_info, delete_past_vids=True):
+        # use yt-dl. if False, use pytube
+        yt_dl = True
         if delete_past_vids:
             os.system("rm " + self.main_dir + "/vids/*.mp4")
 
@@ -158,23 +160,21 @@ class Compiler:
         format_string = "{:0" + str(decimal_places) + "d}"
 
         for i in range(l):
-    #         try:
-            #pre_prefix = "Downloading: " + submissions[i].title + "\n"
-
-            utils.printProgressBar(i+1, l, prefix = 'Downloading videos:', suffix = 'Complete', length = 50)
-
-            vid = YouTube(vid_info[i].submission.url)
-            streams = vid.streams.filter(progressive=True)
+            #utils.printProgressBar(i+1, l, prefix = 'Downloading videos:', suffix = 'Complete', length = 50)
 
             vid_name = format_string.format(i+1) + "-" + vid_info[i].submission.title.replace(" ", "_")
-    #         print(vid_name)
-    #         continue
-            streams.get_highest_resolution().download(self.main_dir + '/vids', vid_name)
-                #vid_paths.append("./vids/" + vid_name + ".mp4")
-    #         except:
-    #             print("Error with post: '%s'. \nurl: %s\nContinuing..." % (submissions[i].title, submissions[i].url))
 
+            if yt_dl:
+                # quotation marks must be escaped for terminal commands
+                vid_name = vid_name.replace("'", "\\'").replace('"', '\\"')
+                print("downloading: " + vid_name)
 
+                os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
+            else:
+                vid = YouTube(vid_info[i].submission.url)
+                streams = vid.streams.filter(progressive=True)
+                streams.get_highest_resolution().download(self.main_dir + '/vids', vid_name)
+            print()
 
     # TODO: make sure that subclips are working correctly
     def create_compilation(self, comp_name, vid_info):
@@ -190,7 +190,9 @@ class Compiler:
 
             start, end = vid_info[vid_index].start, vid_info[vid_index].end
 
-            vid = VideoFileClip(full_path).fx(afx.audio_normalize)
+            # TODO: re-add normalized audio
+            vid = VideoFileClip(full_path)#.fx(afx.audio_normalize)
+
             # TODO: check that it's fine if end=None
             vid = vid.subclip(start, end)
             # so that all clips will fit nicely on a 720p canvas:
@@ -201,8 +203,8 @@ class Compiler:
             vid = vid.on_color(size=(1280, 720), col_opacity=1.0)
 
             hyphen = path.index("-")
-            mp4 = path.index(".mp4")
-            title = path[(hyphen+1) : mp4].replace("_", " ")
+            file_ext = path.rfind(".")
+            title = path[(hyphen+1) : file_ext].replace("_", " ")
 
             #print("'" + title + "' size (before resize): (" + str(vid.h) + ", " + str(vid.w) + ")")
             ## had the resizing line from above here.

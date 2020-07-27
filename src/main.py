@@ -36,8 +36,8 @@ random.seed(1337)
 def main(period, time_limit, max_vids, min_score, no_download):
     compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit(), MAIN_DIR)
 
-    tests.download_test(MAIN_DIR, "are_ya_winnin_son", "https://www.youtube.com/watch?v=xCLTw1L-H5g&feature=emb_title")
-    return
+    # tests.download_test(MAIN_DIR, "are_ya_winnin_son", "https://www.youtube.com/watch?v=xCLTw1L-H5g&feature=emb_title")
+    # return
 
 
     # for debugging
@@ -71,7 +71,8 @@ def main(period, time_limit, max_vids, min_score, no_download):
     random.shuffle(vid_info)
     description = compiler.gen_description(vid_info)
     compiler.write_description(comp_name, description)
-    compiler.download_vids(vid_info)
+    if not no_download:
+        compiler.download_vids(vid_info)
 
     compiler.create_compilation(comp_name, vid_info)
 
