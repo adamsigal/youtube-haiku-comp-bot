@@ -134,7 +134,7 @@ class Compiler:
         # hashtags from video titles get automatically added to the
         # compilation's hastags, so I just remove them
         str_description = str_description.replace('#', ' ')
-        str_description = "Best posts from https://www.reddit.com/r/youtubehaiku/ \n\nVideos:\n"
+        str_description = "Best posts from https://www.reddit.com/r/youtubehaiku/ \n\nVideos:\n" + str_description
 
         f = open(self.main_dir + "/final/" + comp_name + "_description" , "w")
         f.write(str_description)
