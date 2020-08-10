@@ -36,12 +36,8 @@ random.seed(1337)
 def main(period, time_limit, max_vids, min_score, no_download):
     compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit(), MAIN_DIR)
 
-    # tests.download_test(MAIN_DIR, "are_ya_winnin_son", "https://www.youtube.com/watch?v=xCLTw1L-H5g&feature=emb_title")
-    # return
-
-
     # for debugging
-    fetch = False
+    fetch = True
     write = True
     vid_pkl_path = MAIN_DIR + '/src/vid_info.pkl'
 

@@ -31,6 +31,7 @@ from moviepy.editor import *
 from moviepy.video.tools.segmenting import findObjects
 import pygame
 import time
+import youtube_dl
 
 class Compiler:
     def __init__(self, youtube, reddit, main_dir):
@@ -133,6 +134,7 @@ class Compiler:
         # hashtags from video titles get automatically added to the
         # compilation's hastags, so I just remove them
         str_description = str_description.replace('#', ' ')
+        str_description = "Best posts from https://www.reddit.com/r/youtubehaiku/ \n\nVideos:\n"
 
         f = open(self.main_dir + "/final/" + comp_name + "_description" , "w")
         f.write(str_description)
@@ -152,7 +154,7 @@ class Compiler:
         # use yt-dl. if False, use pytube
         yt_dl = True
         if delete_past_vids:
-            os.system("rm " + self.main_dir + "/vids/*.mp4")
+            os.system("rm " + self.main_dir + "/vids/*")
 
         # for having consistent naming of downloaded video files
         l = len(vid_info)
@@ -165,22 +167,35 @@ class Compiler:
             vid_name = format_string.format(i+1) + "-" + vid_info[i].submission.title.replace(" ", "_")
 
             if yt_dl:
-                # quotation marks must be escaped for terminal commands
-                vid_name = vid_name.replace("'", "\\'").replace('"', '\\"')
+                # # quotation marks must be escaped for terminal commands
+                #vid_name = vid_name.replace("'", "\\'").replace('"', '\\"')
+                #vid_name = re.escape(vid_name)
+                vid_name = vid_name.translate(str.maketrans({'"':  r'\\"',
+                                                             "'":  r"\\'",
+                                                             "%": r"percent"}))
+                                    # even when escaped, % sign messes up yt-dl
                 print("downloading: " + vid_name)
+                #
+                # os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
 
-                os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
+                ydl_opts = {
+                    'outtmpl': self.main_dir + "/vids/" + vid_name,
+                    'cookiefile': self.main_dir + "/private/" + "cookies.txt"
+                }
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([vid_info[i].submission.url])
             else:
                 vid = YouTube(vid_info[i].submission.url)
                 streams = vid.streams.filter(progressive=True)
                 streams.get_highest_resolution().download(self.main_dir + '/vids', vid_name)
             print()
 
-    # TODO: make sure that subclips are working correctly
-    def create_compilation(self, comp_name, vid_info):
+
+    def create_compilation(self, comp_name, vid_info, show_thumbs=False):
         #os.system("rm final/*")
         videoclips = []
         d = self.main_dir + "/vids"
+        tmpctr = 0
         for path in sorted(os.listdir(d)):
             print("processing " + path)
             full_path = os.path.join(d, path)
@@ -190,10 +205,13 @@ class Compiler:
 
             start, end = vid_info[vid_index].start, vid_info[vid_index].end
 
-            # TODO: re-add normalized audio
-            vid = VideoFileClip(full_path)#.fx(afx.audio_normalize)
+            try:
+                vid = VideoFileClip(full_path).fx(afx.audio_normalize)
+            except ZeroDivisionError as e:
+                print("Error: " + str(e))
+                print("Likely due to audio normalization; handling...")
+                vid = VideoFileClip(full_path)
 
-            # TODO: check that it's fine if end=None
             vid = vid.subclip(start, end)
             # so that all clips will fit nicely on a 720p canvas:
             vid = vid.resize(height=720)
@@ -204,31 +222,22 @@ class Compiler:
 
             hyphen = path.index("-")
             file_ext = path.rfind(".")
-            title = path[(hyphen+1) : file_ext].replace("_", " ")
+            title = path[(hyphen+1) : file_ext].replace("_", " ").replace('\\', '')
 
-            #print("'" + title + "' size (before resize): (" + str(vid.h) + ", " + str(vid.w) + ")")
-            ## had the resizing line from above here.
-            #print("'" + title + "' size (after resize): (" + str(vid.h) + ", " + str(vid.w) + ")")
-            # TODO: I don't think most of this actually works rn
-            txtClip = TextClip(title, color='white', font="Verdana",
-                               fontsize=30)
+            txtClip = TextClip(title, color='white', font="Verdana", fontsize=30)
             txtClip = txtClip.on_color(size=(int(txtClip.w*1.05), int(txtClip.h*1.75)), color=(0,0,0), col_opacity=0.7)
 
             composed_clip = CompositeVideoClip([vid, txtClip]).set_duration(vid.duration)
-
-            composed_clip.show()
-            time.sleep(0.5)
+            if show_thumbs:
+                composed_clip.show()
+                time.sleep(0.5)
             videoclips.append(composed_clip)
-            #print(full_path)
 
-        # close pygame window -- it was opened at `composed_clip.show()` just above
-        pygame.quit()
-        print("made it to pygame quit")
-        #print(videoclips)
+        if show_thumbs:
+            # close pygame window -- it was opened at `composed_clip.show()` just above
+            pygame.quit()
 
         compilation = concatenate_videoclips(videoclips, method="compose")
-        # normalize audio
-        ##compilation = compilation.fx(afx.audio_normalize)
 
         print("writing compilation...")
         compilation.write_videofile(self.main_dir + "/final/" + comp_name + ".mp4")
