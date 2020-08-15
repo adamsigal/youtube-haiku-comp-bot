@@ -70,7 +70,7 @@ def main(period, time_limit, max_vids, min_score, no_download):
     if not no_download:
         compiler.download_vids(vid_info)
 
-    compiler.create_compilation(comp_name, vid_info)
+    #compiler.create_compilation(comp_name, vid_info)
 
 if __name__ == "__main__":
     # These variables are instanciated to make it easier to see default vals

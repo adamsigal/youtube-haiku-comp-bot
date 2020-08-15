@@ -168,12 +168,11 @@ class Compiler:
 
             if yt_dl:
                 # # quotation marks must be escaped for terminal commands
-                #vid_name = vid_name.replace("'", "\\'").replace('"', '\\"')
-                #vid_name = re.escape(vid_name)
-                vid_name = vid_name.translate(str.maketrans({'"':  r'\\"',
-                                                             "'":  r"\\'",
-                                                             "%": r"percent"}))
-                                    # even when escaped, % sign messes up yt-dl
+                vid_name = vid_name.replace("'", "\'")
+                vid_name = vid_name.replace('"', '\"')
+                # even when escaped, % sign messes up yt-dl
+                vid_name = vid_name.replace('%', '_percent')
+
                 print("downloading: " + vid_name)
                 #
                 # os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
@@ -192,7 +191,6 @@ class Compiler:
 
 
     def create_compilation(self, comp_name, vid_info, show_thumbs=False):
-        #os.system("rm final/*")
         videoclips = []
         d = self.main_dir + "/vids"
         tmpctr = 0
