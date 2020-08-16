@@ -104,6 +104,15 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total:
         print()
 
+
+# used to escape chars that can cause issues in file naming
+def escape_chars(str):
+    char_list = ("'", '"', "‘", "’", "‚", "‛", "“", "”", "„")
+    for c in char_list:
+        str = str.replace(c, "\\" + c)
+    return str
+
+
 # write vid info to file; used to reduce api query usage
 def write_pkl(path, data):
     with open(path, 'wb') as f:

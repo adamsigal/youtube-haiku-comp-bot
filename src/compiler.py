@@ -166,27 +166,21 @@ class Compiler:
 
             vid_name = format_string.format(i+1) + "-" + vid_info[i].submission.title.replace(" ", "_")
 
-            if yt_dl:
-                # # quotation marks must be escaped for terminal commands
-                vid_name = vid_name.replace("'", "\'")
-                vid_name = vid_name.replace('"', '\"')
-                # even when escaped, % sign messes up yt-dl
-                vid_name = vid_name.replace('%', '_percent')
+            # certain chars must be escaped for when naming vid files
+            vid_name = utils.escape_chars(vid_name)
+            # even when escaped, % sign messes up yt-dl
+            vid_name = vid_name.replace('%', '_percent')
 
-                print("downloading: " + vid_name)
-                #
-                # os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
+            print("downloading: " + vid_name)
+            #
+            # os.system("youtube-dl " + vid_info[i].submission.url + " -o" + self.main_dir + "/vids/" + vid_name)
 
-                ydl_opts = {
-                    'outtmpl': self.main_dir + "/vids/" + vid_name,
-                    'cookiefile': self.main_dir + "/private/" + "cookies.txt"
-                }
-                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([vid_info[i].submission.url])
-            else:
-                vid = YouTube(vid_info[i].submission.url)
-                streams = vid.streams.filter(progressive=True)
-                streams.get_highest_resolution().download(self.main_dir + '/vids', vid_name)
+            ydl_opts = {
+                'outtmpl': self.main_dir + "/vids/" + vid_name,
+                'cookiefile': self.main_dir + "/private/" + "cookies.txt"
+            }
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([vid_info[i].submission.url])
             print()
 
 
@@ -220,6 +214,7 @@ class Compiler:
 
             hyphen = path.index("-")
             file_ext = path.rfind(".")
+            #                                                  \\ = escaped slash
             title = path[(hyphen+1) : file_ext].replace("_", " ").replace('\\', '')
 
             txtClip = TextClip(title, color='white', font="Verdana", fontsize=30)
@@ -230,6 +225,7 @@ class Compiler:
                 composed_clip.show()
                 time.sleep(0.5)
             videoclips.append(composed_clip)
+            #vid.close()
 
         if show_thumbs:
             # close pygame window -- it was opened at `composed_clip.show()` just above
