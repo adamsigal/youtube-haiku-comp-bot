@@ -37,7 +37,7 @@ def main(period, time_limit, max_vids, min_score, no_download):
     compiler = Compiler(priv_utils.get_yt(), priv_utils.get_reddit(), MAIN_DIR)
 
     # for debugging
-    fetch = True
+    fetch = False
     write = True
     vid_pkl_path = MAIN_DIR + '/src/vid_info.pkl'
 
@@ -61,16 +61,23 @@ def main(period, time_limit, max_vids, min_score, no_download):
     for i in range(len(vid_info)):
         vid_info[i].print_info()
 
+    # generate name of compilation for file naming
     comp_name = compiler.comp_name_gen(period, max_vids)
+    # create a directory for files related to compilation
+    os.system("mkdir " + MAIN_DIR + "/final/" + comp_name)
 
     # shuffle vid order so that worst vids aren't always last
     random.shuffle(vid_info)
+
     description = compiler.gen_description(vid_info)
     compiler.write_description(comp_name, description)
+    compiler.write_tags(comp_name)
+    compiler.write_title(comp_name, period, max_vids)
+
     if not no_download:
         compiler.download_vids(vid_info)
 
-    compiler.create_compilation(comp_name, vid_info)
+    #compiler.create_compilation(comp_name, vid_info)
 
 if __name__ == "__main__":
     # These variables are instanciated to make it easier to see default vals

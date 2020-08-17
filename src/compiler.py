@@ -122,6 +122,13 @@ class Compiler:
 
         return description
 
+    # Generates name of the compilation based on date and number of videos
+    def comp_name_gen(self, period, num_vids):
+        if period in ('day', 'week', 'month', 'year'):
+            return str(datetime.datetime.date(datetime.datetime.now())) + "_top_" + str(num_vids) + "_of_" + period
+        else:
+            raise Exception("invalid period argument, must be one of: 'day', 'week', 'month', 'year'")
+
     # writes description to file
     def write_description(self, comp_name, description):
         """
@@ -136,19 +143,23 @@ class Compiler:
         str_description = str_description.replace('#', ' ')
         str_description = "Best posts from https://www.reddit.com/r/youtubehaiku/ \n\nVideos:\n" + str_description
 
-        f = open(self.main_dir + "/final/" + comp_name + "_description" , "w")
+        f = open(self.main_dir + "/final/" + comp_name + "/" + comp_name + "_description" , "w")
         f.write(str_description)
         f.close()
-        print("Description written to file: " + self.main_dir + "/final/" + comp_name + "_description")
+        print("Description written to file: " + self.main_dir + "/final/" + comp_name + "/" + comp_name + "_description")
 
+    def write_tags(self, comp_name):
+        static_tags = "YouTube,Haiku,Youtube Haiku,Bot,Reddit,Compilation,Vine,TikTok,Tik Tok,Comedy,Funny,Top, Top 5, Top 10, Top 20, Top 50"
+        datestr = datetime.datetime.date(datetime.datetime.now()).strftime(",%B,%d,%Y")
 
-    # Generates name of the compilation based on date and number of videos
-    def comp_name_gen(self, period, num_vids):
-        if period in ('day', 'week', 'month', 'year'):
-            return str(datetime.datetime.date(datetime.datetime.now())) + "_top_" + str(num_vids) + "_of_" + period
-        else:
-            raise Exception("invalid period argument, must be one of: 'day', 'week', 'month', 'year'")
+        path = self.main_dir + "/final/" + comp_name + "/" + comp_name + "_tags"
+        with open(path, 'wt') as f:
+            f.write(static_tags + datestr)
 
+    def write_title(self, comp_name, period, num_vids):
+        path = self.main_dir + "/final/" + comp_name + "/" + comp_name + "_title"
+        with open(path, 'wt') as f:
+            f.write("Top " + str(num_vids) + " YouTube Haikus of the " + period + " - " + datetime.datetime.date(datetime.datetime.now()).strftime("%B %d, %Y"))
 
     def download_vids(self, vid_info, delete_past_vids=True):
         # use yt-dl. if False, use pytube
@@ -234,4 +245,4 @@ class Compiler:
         compilation = concatenate_videoclips(videoclips, method="compose")
 
         print("writing compilation...")
-        compilation.write_videofile(self.main_dir + "/final/" + comp_name + ".mp4")
+        compilation.write_videofile(self.main_dir + "/final/" + comp_name + "/" + comp_name + ".mp4")
